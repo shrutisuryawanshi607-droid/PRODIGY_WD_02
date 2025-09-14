@@ -1,67 +1,52 @@
+let timer;
+let isRunning = false;
+let [hours, minutes, seconds] = [0, 0, 0];
 
-let startBtn = document.getElementById("start");
-let pauseBtn = document.getElementById("pause");
-let resetBtn = document.getElementById("reset");
-let lapBtn = document.getElementById("lap");
-let timeDisplay = document.getElementById("time");
-let lapTable = document.getElementById("lapTable").getElementsByTagName("tbody")[0];
-
-let timer = null;
-let elapsedTime = 0;
-let running = false;
-let lapCount = 0;
-
-// Format time in hh:mm:ss
-function formatTime(ms) {
-  let totalSeconds = Math.floor(ms / 1000);
-  let hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-  let minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
-  let seconds = String(totalSeconds % 60).padStart(2, "0");
-  return ${hours}:${minutes}:${seconds};
-}
-
-// Update display every second
 function updateDisplay() {
-  timeDisplay.textContent = formatTime(elapsedTime);
+  let h = hours < 10 ? "0" + hours : hours;
+  let m = minutes < 10 ? "0" + minutes : minutes;
+  let s = seconds < 10 ? "0" + seconds : seconds;
+  document.getElementById("display").innerText = `${h}:${m}:${s}`;
 }
 
-// Start
-startBtn.onclick = () => {
-  if (!running) {
-    running = true;
-    let startTime = Date.now() - elapsedTime;
+function startStop() {
+  if (!isRunning) {
     timer = setInterval(() => {
-      elapsedTime = Date.now() - startTime;
+      seconds++;
+      if (seconds == 60) {
+        seconds = 0;
+        minutes++;
+        if (minutes == 60) {
+          minutes = 0;
+          hours++;
+        }
+      }
       updateDisplay();
-    }, 100);
+    }, 1000);
+    isRunning = true;
   }
-};
+}
 
-// Pause
-pauseBtn.onclick = () => {
-  running = false;
+function pause() {
   clearInterval(timer);
-};
+  isRunning = false;
+}
 
-// Reset
-resetBtn.onclick = () => {
-  running = false;
+function reset() {
   clearInterval(timer);
-  elapsedTime = 0;
+  [hours, minutes, seconds] = [0, 0, 0];
   updateDisplay();
-  lapTable.innerHTML = "";
-  lapCount = 0;
-};
+  isRunning = false;
+  document.getElementById("laps").innerHTML = "";
+}
 
-// Lap
-lapBtn.onclick = () => {
-  if (running) {
-    lapCount++;
-    let row = lapTable.insertRow();
-    row.insertCell(0).textContent = lapCount;
-    row.insertCell(1).textContent = formatTime(elapsedTime);
+function lap() {
+  if (isRunning) {
+    let lapTime = document.getElementById("display").innerText;
+    let li = document.createElement("li");
+    li.innerText = `Lap: ${lapTime}`;
+    document.getElementById("laps").appendChild(li);
   }
-};
+}
 
-// Initialize
 updateDisplay();
