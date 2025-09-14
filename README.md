@@ -44,4 +44,4 @@ Add milliseconds display
 Make fully responsive for mobile
 
 👩‍💻 Author
-Developed by Harshala Patil ✨
+Developed by Shruti Suryawanshi✨
